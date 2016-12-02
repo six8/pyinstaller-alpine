@@ -12,6 +12,8 @@ PATH="/pyinstaller:$PATH"
 
 if [ -f requirements.txt ]; then
     pip install -r requirements.txt
+elif [ -f setup.py ]; then
+    pip install .
 fi
 
 # Exclude pycrypto and PyInstaller from built packages
