@@ -15,8 +15,10 @@ RUN apk --update --no-cache add \
 RUN pip install \
     pycrypto
 
+ARG PYINSTALLER_TAG=v3.2
+
 # Build bootloader for alpine
-RUN git clone https://github.com/pyinstaller/pyinstaller.git /tmp/pyinstaller \
+RUN git clone --depth 1 --single-branch --branch $PYINSTALLER_TAG https://github.com/pyinstaller/pyinstaller.git /tmp/pyinstaller \
     && cd /tmp/pyinstaller/bootloader \
     && python ./waf configure --no-lsb all \
     && pip install .. \
