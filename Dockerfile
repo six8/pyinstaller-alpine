@@ -1,6 +1,12 @@
-# Official Python base image is needed or some applications will segfault.
-FROM python:$ALPINE_VERSION-alpine
+ARG ARCH=""
+ARG ALPINE_VERSION="3.6"
 
+FROM ${ARCH}python:${ALPINE_VERSION}-alpine
+
+ARG PYINSTALLER_TAG
+ENV PYINSTALLER_TAG ${PYINSTALLER_TAG:-"v3.4"}
+
+# Official Python base image is needed or some applications will segfault.
 # PyInstaller needs zlib-dev, gcc, libc-dev, and musl-dev
 RUN apk --update --no-cache add \
     zlib-dev \
@@ -15,12 +21,10 @@ RUN apk --update --no-cache add \
 RUN pip install \
     pycrypto
 
-ARG PYINSTALLER_TAG=$PYINSTALLER_TAG
-
 # Build bootloader for alpine
-RUN git clone --depth 1 --single-branch --branch $PYINSTALLER_TAG https://github.com/pyinstaller/pyinstaller.git /tmp/pyinstaller \
+RUN git clone --depth 1 --single-branch --branch ${PYINSTALLER_TAG} https://github.com/pyinstaller/pyinstaller.git /tmp/pyinstaller \
     && cd /tmp/pyinstaller/bootloader \
-    && python ./waf configure --no-lsb all \
+    && CFLAGS="-Wno-stringop-overflow" python ./waf configure --no-lsb all \
     && pip install .. \
     && rm -Rf /tmp/pyinstaller
 
