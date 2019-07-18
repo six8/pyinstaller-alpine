@@ -12,7 +12,9 @@ RUN apk --update --no-cache add \
     zlib-dev \
     musl-dev \
     libc-dev \
+    libffi-dev \
     gcc \
+    g++ \
     git \
     pwgen \
     && pip install --upgrade pip
