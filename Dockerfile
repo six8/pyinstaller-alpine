@@ -1,10 +1,14 @@
 ARG ARCH=""
-ARG ALPINE_VERSION="3.6"
+ARG ALPINE_VERSION="3.7"
 
 FROM ${ARCH}python:${ALPINE_VERSION}-alpine
 
 ARG PYINSTALLER_TAG
-ENV PYINSTALLER_TAG ${PYINSTALLER_TAG:-"v3.4"}
+ENV PYINSTALLER_TAG ${PYINSTALLER_TAG:-"v3.6"}
+
+# Use Tsinghua Open Source Mirror.
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
+RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
 
 # Official Python base image is needed or some applications will segfault.
 # PyInstaller needs zlib-dev, gcc, libc-dev, and musl-dev
@@ -26,7 +30,7 @@ RUN pip install \
 # Build bootloader for alpine
 RUN git clone --depth 1 --single-branch --branch ${PYINSTALLER_TAG} https://github.com/pyinstaller/pyinstaller.git /tmp/pyinstaller \
     && cd /tmp/pyinstaller/bootloader \
-    && CFLAGS="-Wno-stringop-overflow" python ./waf configure --no-lsb all \
+    && CFLAGS="-Wno-stringop-overflow -Wno-stringop-truncation" python ./waf configure --no-lsb all \
     && pip install .. \
     && rm -Rf /tmp/pyinstaller
 
