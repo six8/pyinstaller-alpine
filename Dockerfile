@@ -6,10 +6,6 @@ FROM ${ARCH}python:${ALPINE_VERSION}-alpine
 ARG PYINSTALLER_TAG
 ENV PYINSTALLER_TAG ${PYINSTALLER_TAG:-"v3.6"}
 
-# Use Tsinghua Open Source Mirror.
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
-RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
-
 # Official Python base image is needed or some applications will segfault.
 # PyInstaller needs zlib-dev, gcc, libc-dev, and musl-dev
 RUN apk --update --no-cache add \
