@@ -10,17 +10,7 @@ executors:
     docker:
       - image: docker:18.06.0-ce
 jobs:
-  build:
-    executor: publisher
-    steps:
-      - checkout
-      - setup_remote_docker:
-          version: 18.06.0-ce
-      - run: docker run --privileged linuxkit/binfmt:v0.6
-      - attach_workspace:
-          at: .
-      - run: make build REPOSITORY="${DOCKER_REGISTRY}"
-  buiil_n_publish:
+  build_python3:
     executor: publisher
     steps:
       - checkout
@@ -31,6 +21,32 @@ jobs:
           at: .
       - run: apk add --no-cache make bash git
       - run: make build REPOSITORY="${DOCKER_REGISTRY}"
+  build_python2:
+    executor: publisher
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 18.06.0-ce
+      - run: docker run --privileged linuxkit/binfmt:v0.6
+      - attach_workspace:
+          at: .
+      - run: apk add --no-cache make bash git
+      - run: make build REPOSITORY="${DOCKER_REGISTRY}" PYTHON_VERSION=2.7
+  buiil_n_publish:
+    executor: publisher
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 18.06.0-ce
+      - run: docker run --privileged linuxkit/binfmt:v0.6
+      - attach_workspace:
+          at: .
+      - run: apk add --no-cache make bash git
+      - run: make build REPOSITORY="${DOCKER_REGISTRY}" PYTHON_VERSION=2.7
+      - run: docker login -u "${DOCKER_REGISTRY_USER}" -p "${DOCKER_REGISTRY_PASSWORD}"
+      - run: make push REPOSITORY="${DOCKER_REGISTRY}" PYTHON_VERSION=2.7
+      - run: make manifest REPOSITORY="${DOCKER_REGISTRY}" PYTHON_VERSION=2.7
+      - run: make build REPOSITORY="${DOCKER_REGISTRY}"
       - run: docker login -u "${DOCKER_REGISTRY_USER}" -p "${DOCKER_REGISTRY_PASSWORD}"
       - run: make push REPOSITORY="${DOCKER_REGISTRY}"
       - run: make manifest REPOSITORY="${DOCKER_REGISTRY}"
@@ -38,7 +54,11 @@ workflows:
   version: 2
   kubeyaml:
     jobs:
-      - build:
+      - build_python3:
+          filters:
+            branches:
+              ignore: develop
+      - build_python2:
           filters:
             branches:
               ignore: develop
