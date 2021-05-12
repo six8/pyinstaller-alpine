@@ -25,7 +25,8 @@ RUN wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py && pip --vers
 
 # Install pycrypto so --key can be used with PyInstaller
 RUN pip install \
-    pycrypto
+    pycrypto \
+    colorama
 
 # Build bootloader for alpine
 RUN git clone --depth 1 --single-branch --branch ${PYINSTALLER_TAG} https://github.com/pyinstaller/pyinstaller.git /tmp/pyinstaller \
