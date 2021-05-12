@@ -21,7 +21,8 @@ RUN apk --update --no-cache add \
 
 # Install pycrypto so --key can be used with PyInstaller
 RUN pip install \
-    pycrypto
+    pycrypto \
+    colorama
 
 # Build bootloader for alpine
 RUN git clone --depth 1 --single-branch --branch ${PYINSTALLER_TAG} https://github.com/pyinstaller/pyinstaller.git /tmp/pyinstaller \
